@@ -29,9 +29,9 @@ class BitBrowserApi {
         .then((res) => console.log(`✅ 批量修改浏览器窗口分组:${res.body.data}`))
         .catch((err) => console.error(`❌ 批量修改浏览器窗口分组:${err}`));
     // 分页获取浏览器窗口列表 /browser/list
-    static getBrowserList = (page, pageSize) => superagent
+    static getBrowserList = (page, pageSize, groupId) => superagent
         .post(`${this.baseURL}/browser/list`)
-        .send({ page, pageSize })
+        .send({ page, pageSize, groupId })
         .then((res) => res.body.data.list)
         .catch((err) => console.error(`❌ 分页获取浏览器窗口列表:${err}`));
 }

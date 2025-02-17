@@ -1,3 +1,4 @@
+import { group } from "node:console";
 import superagent from "superagent";
 
 type Browser = {
@@ -51,10 +52,10 @@ class BitBrowserApi {
       .catch((err) => console.error(`❌ 批量修改浏览器窗口分组:${err}`));
 
   // 分页获取浏览器窗口列表 /browser/list
-  static getBrowserList = (page: number, pageSize: number) =>
+  static getBrowserList = (page: number, pageSize: number, groupId: string) =>
     superagent
       .post(`${this.baseURL}/browser/list`)
-      .send({ page, pageSize })
+      .send({ page, pageSize, groupId })
       .then((res) => res.body.data.list)
       .catch((err) => console.error(`❌ 分页获取浏览器窗口列表:${err}`));
 }

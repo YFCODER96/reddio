@@ -3,14 +3,14 @@ import User from "../models/userModel.js";
 import puppeteer from "puppeteer-core";
 import BitBrowserApi from "../apis/BitBrowserApi.js";
 /* 全局 */
+const waitForBrowserGroupId = "2c9bc04794f8157c0194f9250fab245d";
 const bindedBrowserGroupId = "2c9bc06194f8165b0194f9b33e6b37c3";
+
 const register = async () => {
   console.log("register");
 
   // 查询空邀请码
-  const user = await User.findOne({
-    invitationCode: "",
-  });
+  const user = await User.findOne({ isTwitterAuth: { $ne: true } });
   if (!user) {
     return;
   }
@@ -32,7 +32,11 @@ const register = async () => {
   // 启动浏览器
   const pageIndex = 0;
   const pageSize = 1;
-  const browserList = await BitBrowserApi.getBrowserList(pageIndex, pageSize);
+  const browserList = await BitBrowserApi.getBrowserList(
+    pageIndex,
+    pageSize,
+    waitForBrowserGroupId
+  );
   if (browserList.length === 0) {
     console.log("没有可用的浏览器");
     process.exit(0);
@@ -61,9 +65,9 @@ const register = async () => {
   });
   await page.goto(twitterAuthUrl);
   // 点击授权 Authorize app
-  const element = await page.waitForSelector(
-    '::-p-xpath(//div[text()="Authorize app"])'
-  );
+  const element = await page
+    .waitForSelector('::-p-xpath(//div[text()="Authorize app"])')
+    .catch(() => null);
   if (element) {
     await element.click();
   } else {
@@ -82,7 +86,7 @@ const register = async () => {
   // 更新绑定信息
   await User.findOneAndUpdate(
     { walletAddress: user.walletAddress },
-    { twitterBindedBrowserSeq: seq }
+    { twitterBindedBrowserSeq: seq, isTwitterAuth: true }
   );
   console.log("finish");
 };
