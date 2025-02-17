@@ -1,0 +1,35 @@
+{
+  "name": "reddio",
+  "version": "1.0.0",
+  "main": "./dist/server.js",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "import": "node dist/controllers/importController.js",
+    "register": "node dist/server.js --register",
+    "dev": "nodemon dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ethers": "^6.13.5",
+    "lowdb": "^7.0.1",
+    "mongoose": "^8.10.1",
+    "puppeteer-core": "^24.2.1",
+    "puppeteer-real-browser": "^1.4.0",
+    "socks-proxy-agent": "^8.0.5",
+    "superagent": "^10.1.1",
+    "superagent-prefix": "^0.0.2",
+    "user-agents": "^1.1.452"
+  },
+  "devDependencies": {
+    "@types/superagent": "^8.1.9",
+    "@types/superagent-prefix": "^0.0.6",
+    "@types/user-agents": "^1.0.4"
+  }
+}
