@@ -2,14 +2,13 @@ import fs from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import mongoose from "mongoose";
-import { JSONFilePreset } from "lowdb/node";
 import User from "../models/userModel.js";
 import { randomGeneratorUserAgent } from "../utils/util.js";
+import { ethers } from "ethers";
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const db = await JSONFilePreset(`${__dirname}/addresses_10000_2.json`, []);
 /* 全局变量 */
-const ipFileName = "socks5_ip_510.txt";
-const walletFileName = "wallet_address_510.txt";
+const ipFileName = "socks5_ip_1490.txt";
+const walletFileName = "privateKeys_1490.txt";
 const count = 510; // 导入个数
 async function importData() {
     try {
@@ -21,13 +20,14 @@ async function importData() {
         const walletAddressArr = fs
             .readFileSync(`${__dirname}/../../data/${walletFileName}`, "utf-8")
             .split("\n");
-        const addressesArray = walletAddressArr.map((wallet, index) => {
-            const ipdata = ipProxyArr[index];
+        const addressesArray = ipProxyArr.map((ipdata, index) => {
+            const wallet = walletAddressArr[index];
             return {
-                walletAddress: wallet.trim(),
+                walletAddress: new ethers.Wallet(wallet.trim()).address,
+                privateKey: wallet.trim(),
                 ipProxy: ipdata.trim(),
                 userAgent: userAgent,
-                invitationCode: "",
+                usedInvitationCode: "",
                 remark: count,
             };
         });

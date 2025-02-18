@@ -9,8 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "import": "node dist/controllers/importController.js",
-    "register": "node dist/server.js --register",
-    "dev": "nodemon dist/server.js"
+    "bind": "node dist/server.js --bind",
+    "dev": "nodemon dist/server.js --run"
   },
   "keywords": [],
   "author": "",

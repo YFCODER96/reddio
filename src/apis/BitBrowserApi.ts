@@ -1,4 +1,3 @@
-import { group } from "node:console";
 import superagent from "superagent";
 
 type Browser = {

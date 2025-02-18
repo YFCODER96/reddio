@@ -5,6 +5,8 @@ import BitBrowserApi from "../apis/BitBrowserApi.js";
 /* 全局 */
 const waitForBrowserGroupId = "2c9bc04794f8157c0194f9250fab245d";
 const bindedBrowserGroupId = "2c9bc06194f8165b0194f9b33e6b37c3";
+// 未登录推特的浏览器分组
+const unLoginTwitterBrowserGroupId = "2c9bc0589511d2ec019517117ac208ff";
 const register = async () => {
     console.log("register");
     // 查询空邀请码
@@ -20,6 +22,10 @@ const register = async () => {
     console.log(userInfo);
     if (userInfo.error === "User not registered") {
         await reddioApi.preRegister().then((res) => console.log(res.message));
+    }
+    else if (userInfo.error === "User pre registered, twitter bind") {
+        console.log(`已绑定twitter,不需要再次绑定`);
+        return;
     }
     // 推特授权
     const { url: twitterAuthUrl } = await reddioApi.getTwitterAuth();
@@ -56,25 +62,26 @@ const register = async () => {
     });
     await page.goto(twitterAuthUrl);
     // 点击授权 Authorize app
-    const element = await page
-        .waitForSelector('::-p-xpath(//div[text()="Authorize app"])')
-        .catch(() => null);
-    if (element) {
-        await element.click();
-    }
-    else {
-        console.log("授权按钮不存在或者未登录twitter");
+    /* const element = await page
+      .waitForSelector('::-p-xpath(//div[text()="Authorize app"])')
+      .catch(() => null); */
+    try {
+        await page.locator('button ::-p-text("授权应用")').setTimeout(8000).click();
+        // 等待授权完成
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        // 移动浏览器到绑定分组
         await BitBrowserApi.updateBrowserGroup(bindedBrowserGroupId, [id]);
-        return;
+        console.log("finish");
     }
-    // 等待授权完成
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    // 关闭浏览器
-    await BitBrowserApi.closeBrowser(id);
-    // 移动浏览器到绑定分组
-    await BitBrowserApi.updateBrowserGroup(bindedBrowserGroupId, [id]);
-    // 更新绑定信息
-    await User.findOneAndUpdate({ walletAddress: user.walletAddress }, { twitterBindedBrowserSeq: seq, isTwitterAuth: true });
-    console.log("finish");
+    catch (error) {
+        console.log("授权按钮不存在或者未登录twitter");
+        // 移动浏览器到绑定分组
+        await BitBrowserApi.updateBrowserGroup(unLoginTwitterBrowserGroupId, [id]);
+    }
+    finally {
+        await page.close();
+        // 关闭浏览器
+        await BitBrowserApi.closeBrowser(id);
+    }
 };
 export default register;

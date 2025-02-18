@@ -6,6 +6,11 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
+  privateKey: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   isTwitterAuth: {
     type: Boolean,
     default: false,
@@ -22,7 +27,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  invitationCode: {
+  usedInvitationCode: {
     type: String,
     default: "",
   },
@@ -38,6 +43,20 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
+  userInfo: {
+    type: Object,
+    default: null,
+  },
+});
+// 在保存文档之前更新 updated 字段
+userSchema.pre("save", function (next) {
+  this.updatedAt = new Date(); // 设置 updated 字段为当前时间
+  next(); // 继续执行保存操作
+});
+
+userSchema.pre("findOneAndUpdate", function (next) {
+  this.set({ updatedAt: new Date() }); // 设置 updated 字段为当前时间的 Date 对象
+  next();
 });
 
 const User = model("User", userSchema);
