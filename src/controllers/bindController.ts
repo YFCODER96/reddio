@@ -78,6 +78,8 @@ const register = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // 移动浏览器到绑定分组
     await BitBrowserApi.updateBrowserGroup(bindedBrowserGroupId, [id]);
+    user.isTwitterAuth = true;
+    await user.save();
     console.log("finish");
   } catch (error) {
     console.log("授权按钮不存在或者未登录twitter");
